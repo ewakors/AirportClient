@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="itextg-5.5">
+    <CLASSES>
+      <root url="file://D:/Pobrane/itextg-5.5.10" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://D:/Pobrane/itextg-5.5.10" />
+    </SOURCES>
+    <jarDirectory url="file://D:/Pobrane/itextg-5.5.10" recursive="false" />
+    <jarDirectory url="file://D:/Pobrane/itextg-5.5.10" recursive="false" type="SOURCES" />
+  </library>
+</component>
