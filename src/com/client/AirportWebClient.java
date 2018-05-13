@@ -8,8 +8,6 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,9 +17,19 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.*;
+import com.ws.AirportService;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import com.ws.AirportService;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -34,361 +42,284 @@ public class AirportWebClient extends JFrame {
     private static Font subFont = new Font(Font.FontFamily.TIMES_ROMAN, 16,
             Font.BOLD);
 
-    private String[] columnNames
-            = {"Lot z", "Lot do", "Dzień", "Godzina"};
-    
-   
-    
     String concertName;
 
-    JPanel flights = new JPanel();
-    JPanel reservations = new JPanel();
+    JPanel flightsPanel = new JPanel();
+    JPanel reservationsPanel = new JPanel();
 
-    JList lista;
-    JList resvList1;
-    JList resvList2;
-    JList resvList3;
-    JList resvList4;
-
-    JButton rezerwuj = new JButton("Dodaj do rezerwacji");
-    JButton potwierdz = new JButton("Potwierdź rezerwację");
-    JButton anuluj = new JButton("Anuluj rezerwację");
-    JButton innemiejsce = new JButton("Zmień miejsce");
-    JButton potwinnemiejsce = new JButton("Potwierdź");
-
-    JLabel resLabel = new JLabel("Dostępne miejsca");
-    JLabel resLabel2 = new JLabel("Wybrane miejsca");
-    JLabel resLabel3 = new JLabel("Wynik");
-    JLabel resLabel4 = new JLabel("Wynik");
-
-    JScrollPane skrolpanel;
-    JScrollPane skrolpanel2;
-    JScrollPane skrolpanel3;
-    JScrollPane skrolpanel4;
+    JButton rezerwuj = new JButton("Kup bilet");
+    JButton potwierdz = new JButton("Potwierdź kupno biletu");
 
     JTabbedPane tabs = new JTabbedPane();
-
-    DefaultListModel model = new DefaultListModel();
-    DefaultListModel modelRes = new DefaultListModel();
-    DefaultListModel modelRes2 = new DefaultListModel();
-    DefaultListModel modelRes3 = new DefaultListModel();
-    DefaultListModel modelRes4 = new DefaultListModel();
 
     static AirportServiceService mss;
     static AirportService ms;
 
-    static List<Flight> listakon;
-    static List<Reservation> listares;
-    static List<Reservation> listares2;
-    static List<Reservation> listares3;
-    static List<Reservation> listares4;
+    static List<Flight> flightsList;
+    static List<Reservation> reservationsList;
+
+
+    DefaultTableModel flightTable;
+    DefaultTableModel flightReservationsTable;
+    JTable jTableFlights;
+    JTable jTableReservations;
+    private TableRowSorter<TableModel> rowSorter;
+    private JTextField jtfFilter = new JTextField();
     
-//       private DefaultTableModel tableModel = new DefaultTableModel(listakon, columnNames);
-//    private JTable jTable = new JTable(tableModel);
-//
-//    private TableRowSorter<TableModel> rowSorter
-//            = new TableRowSorter<>(jTable.getModel());
-//
-//    private JTextField jtfFilter = new JTextField();
-//    private JButton jbtFilter = new JButton("Filter");
+    private JTextField searchReservationTF = new JTextField();
+     private TableRowSorter<TableModel> reservationRowSorter;
 
-    ActionListener anulujMiejsce = new ActionListener() {
-        public void actionPerformed(ActionEvent ev) {
-
-            resvList3.getSelectedIndex();
-
-            ms.deleteReservation(listares3.get(resvList3.getSelectedIndex()).getIdReservation());
-
-            listares3 = ms.getReservationList2(1);
-
-            modelRes3 = new DefaultListModel();
-
-            for(Reservation reserw:listares3) {
-
-                modelRes3.addElement("Id: "+reserw.getIdReservation()+", Lot: "+reserw.getIdFlight());
-
-            }
-
-            resvList3.setModel(modelRes3);
-
-            modelRes4 = new DefaultListModel();
-
-            listares4 = new ArrayList<>();
-
-            resvList4.setModel(modelRes4);
-        }
-    };
-
-    ActionListener zmienMiejsce = new ActionListener() {
-        public void actionPerformed(ActionEvent ev) {
-
-            resvList3.getSelectedIndex();
-
-            listares4 = ms.getReservationList(listares3.get(resvList3.getSelectedIndex()).getIdFlight());
-
-            modelRes4 = new DefaultListModel();
-
-            for(Reservation reserw:listares4) {
-
-                modelRes4.addElement("Id: "+reserw.getIdReservation()+", Lot: "+reserw.getIdFlight());
-
-            }
-
-            resvList4.setModel(modelRes4);
-        }
-    };
-
-    ActionListener zmienMiejsce2 = new ActionListener() {
-        public void actionPerformed(ActionEvent ev) {
-
-            listares3 = ms.getReservationList2(1);
-
-            modelRes3 = new DefaultListModel();
-
-            for(Reservation reserw:listares3) {
-
-                modelRes3.addElement("Id: "+reserw.getIdReservation()+", Lot: "+reserw.getIdFlight());
-
-            }
-
-            resvList3.setModel(modelRes3);
-
-            modelRes4 = new DefaultListModel();
-
-            listares4 = new ArrayList<>();
-
-            resvList4.setModel(modelRes4);
-        }
-    };
-
-    ActionListener rezerwujList = new ActionListener() {
-        public void actionPerformed(ActionEvent ev) {
-
-            modelRes2 = new DefaultListModel();
-
-            Reservation reserved = listares.get(resvList1.getSelectedIndex());
-
-            if(listares2.contains(reserved))
-            {
-            }
-            else {
-                listares2.add(reserved);
-            }
-            for (Reservation resv : listares2) {
-                modelRes2.addElement(resv.getIdReservation() + " " + resv.getIdFlight() + " " + resv.getUser());
-            }
-            resvList2.setModel(modelRes2);
-        }
-    };
-
+    int reservationId = 0;
+    
+    JScrollPane flightsScrollPane;
+    JScrollPane reservationsScrollPane;
 
     ActionListener potwierdzenie = new ActionListener() {
         public void actionPerformed(ActionEvent ev) {
+        
+            jTableReservations.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+        public void valueChanged(ListSelectionEvent event) {
+            // do some actions here, for example
+            // print first column value from selected row
+            System.out.println(jTableReservations.getValueAt(jTableReservations.getSelectedRow(), 0).toString());
+        }
+    });
 
-            boolean rezerwacja;
-            rezerwacja = ms.checkReservation(listares2,1);
+            
+        }
+    };
+    
+    public static void main(String[] args) throws IOException, DocumentException, Exception {
 
-            if(rezerwacja) {
+        mss = new AirportServiceService();
+        ms = mss.getAirportServicePort();
 
-                resLabel3.setText("Dokonano rezerwacji");
-                try {
-                    generatePDF(listares2);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (DocumentException e) {
-                    e.printStackTrace();
-                }
+        flightsList = new ArrayList<>();
+        flightsList = ms.getFlightList();
 
-                listares3 = ms.getReservationList2(1);
-
-                modelRes3 = new DefaultListModel();
-
-                for(Reservation reserw:listares3) {
-
-                    modelRes3.addElement("Id: "+reserw.getIdReservation()+", Lot: "+reserw.getIdFlight());
-
-                }
-
-                resvList3.setModel(modelRes3);
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new AirportWebClient();
             }
-            else
-                resLabel3.setText("Jedno lub więcej wybranych miejsc jest zajęte");
+        });
 
-            modelRes = new DefaultListModel();
-            modelRes2 = new DefaultListModel();
+    }
 
-            listares2 = new ArrayList<>();
-            listares = new ArrayList<>();
+    public void generatePDF(String reservationId) throws FileNotFoundException, DocumentException {
 
-            resvList1.setModel(modelRes);
-            resvList2.setModel(modelRes2);
-        }
-    };
+        DateFormat dateFormat = new SimpleDateFormat("yyyymmddHHmmss");
+        Date date = new Date();
+        System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
 
-    ListSelectionListener wczytajKoncert = new ListSelectionListener() {
-        @Override
-        public void valueChanged(ListSelectionEvent e) {
-            int index = lista.getSelectedIndex();
+        String nazwapliku = "/Users/ewa/Downloads/AirportClient/Rezerwacja" + dateFormat.format(date) + ".pdf";
 
+        Document document = new Document();
+        PdfWriter.getInstance(document, new FileOutputStream(nazwapliku));
 
-            concertName = (String) lista.getSelectedValue();
+        document.open();
+        com.itextpdf.text.Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
 
-            listares = ms.getReservationList(listakon.get(index).getId());
+        Chunk chunk = new Chunk("Potwierdzenie kupna lotu", catFont);
 
-            modelRes = new DefaultListModel();
-            modelRes2 = new DefaultListModel();
+        Paragraph para = new Paragraph("Lot", catFont);
 
-            resvList2.setModel(modelRes2);
-            listares2 = new ArrayList<>();
+        document.add(para);
 
-            resvList1.setModel(modelRes);
-        }
-    };
+        document.add(chunk.NEWLINE);
+        document.add(chunk.NEWLINE);
 
-        public static void main (String[]args) throws IOException, DocumentException {
+        
+            String rezerwacja = "Numer rezerwacji: " + reservationId;
 
-            mss = new AirportServiceService();
-            ms = mss.getAirportServicePort();
-
-            listakon = new ArrayList<>();
-            listakon = ms.getFlightList();
-            listares2 = new ArrayList<>();
-
-            listares3 = ms.getReservationList2(1);
-            listares4 = new ArrayList<>();
-
-            SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    new AirportWebClient();
-                }
-            });
-        }
-
-        public void generatePDF(List<Reservation> miejsca) throws FileNotFoundException, DocumentException {
-
-            DateFormat dateFormat = new SimpleDateFormat("yyyymmddHHmmss");
-            Date date = new Date();
-            System.out.println(dateFormat.format(date)); //2016/11/16 12:08:43
-
-            String nazwapliku = "/Users/ewa/Downloads/AirportClient/Rezerwacja"+dateFormat.format(date)+".pdf";
-
-            Document document = new Document();
-            PdfWriter.getInstance(document, new FileOutputStream(nazwapliku));
-
-            document.open();
-            com.itextpdf.text.Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-
-            Chunk chunk = new Chunk(concertName, catFont);
-
-            Paragraph para = new Paragraph(concertName,catFont);
-
-            document.add(para);
-
+            chunk = new Chunk(rezerwacja, subFont);
+            document.add(chunk);
             document.add(chunk.NEWLINE);
-            document.add(chunk.NEWLINE);
-
-             for(Reservation res1:miejsca)
-             {
-                 String rezerwacja = "Id rezerwacji: " + res1.getIdReservation();
-
-                chunk = new Chunk(rezerwacja, subFont);
-                document.add(chunk);
-                 document.add(chunk.NEWLINE);
-             }
-            document.close();
-        }
+        
+        document.close();
+    }
 
     AirportWebClient() {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        
         JPanel panel = new JPanel();
+        JPanel searchPanel = new JPanel(new BorderLayout()); 
+        JPanel reservationSearchPanel = new JPanel(new BorderLayout());
+        
+        flightTable = new DefaultTableModel();
 
+        searchPanel.add(new JLabel("Wyszukiwanie lotów:"), BorderLayout.NORTH);
+        searchPanel.add(jtfFilter);
+        jtfFilter.setPreferredSize(new Dimension(200, 22));
 
-        flights.setLayout(new GridLayout(2,5, 10,10));
+        flightTable.addColumn("Lot z");
+        flightTable.addColumn("Lot do");
+        flightTable.addColumn("Dzień");
+        flightTable.addColumn("Godzina");
 
-        for(Flight koncert:listakon) {
-            System.out.println(koncert.getCityForm());
+        for (Flight flight : flightsList) {
 
-            model.addElement(koncert.getCityForm()+" "+koncert.getCityTo()+" "+koncert.getDay()+" "+koncert.getTime());
+            Object[] object = new Object[4];
+            object[0] = flight.getCityForm();
+            object[1] = flight.getCityTo();
+            object[2] = flight.getDay();
+            object[3] = flight.getTime();
+            flightTable.addRow(object);
+
+            System.out.println("city from " + flight.getCityForm());
         }
-        lista = new JList(model);
+        jTableFlights = new JTable(flightTable);
+        rowSorter = new TableRowSorter<>(jTableFlights.getModel());
+        jTableFlights.setRowSorter(rowSorter);
+        
+       
 
-        resvList1 = new JList();
-        resvList1.setMaximumSize(new Dimension(100,100));
+        flightReservationsTable = new DefaultTableModel();
+        
+        flightReservationsTable.addColumn("Id rezerwacji");
+        flightReservationsTable.addColumn("Lot z");
+        flightReservationsTable.addColumn("Lot do");
+        flightReservationsTable.addColumn("Dzień");
+        flightReservationsTable.addColumn("Godzina");
+        jTableReservations = new JTable(flightReservationsTable);
 
-        resvList2 = new JList();
-        resvList2.setMaximumSize(new Dimension(100,100));
+        //search flights
+        jtfFilter.getDocument().addDocumentListener(new DocumentListener() {
 
-        skrolpanel = new JScrollPane(resvList1);
-        skrolpanel2 = new JScrollPane(resvList2);
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String text = jtfFilter.getText();
 
-        lista.addListSelectionListener(wczytajKoncert);
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
 
-        flights.add(lista);
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String text = jtfFilter.getText();
 
-        flights.add(resLabel);
-        flights.add(skrolpanel);
+                if (text.trim().length() == 0) {
+                    rowSorter.setRowFilter(null);
+                } else {
+                    rowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
 
-        rezerwuj.addActionListener(rezerwujList);
-        flights.add(rezerwuj);
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
 
-        flights.add(resLabel2);
-        flights.add(skrolpanel2);
+        });
 
-        flights.add(potwierdz);
+        //search reservation
+        searchReservationTF.getDocument().addDocumentListener(new DocumentListener() {
 
-        flights.add(resLabel3);
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                String text = searchReservationTF.getText();
 
-        potwierdz.addActionListener(potwierdzenie);
+                if (text.trim().length() == 0) {
+                    reservationRowSorter.setRowFilter(null);
+                } else {
+                    reservationRowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
 
-        flights.setBorder(BorderFactory.createEmptyBorder(30,30,30,30));
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                String text = searchReservationTF.getText();
 
-        // Rezerwacje
-        reservations.setLayout(new GridLayout(2,5, 10,10));
+                if (text.trim().length() == 0) {
+                    reservationRowSorter.setRowFilter(null);
+                } else {
+                    reservationRowSorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+                }
+            }
 
-        for(Reservation reserw:listares3) {
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
 
-            modelRes3.addElement("Id: "+reserw.getIdReservation()+", Lot: "+reserw.getIdFlight());
+        });
 
-        }
-        resvList3 = new JList(modelRes3);
-        resvList3.setMaximumSize(new Dimension(100,100));
+        JPanel buttonPanel = new JPanel(new BorderLayout());
 
-        resvList4 = new JList();
-        resvList4.setMaximumSize(new Dimension(100,100));
+        rezerwuj.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_add_rowsActionPerformed(evt);
+            }
 
-        skrolpanel3 = new JScrollPane(resvList3);
-        skrolpanel4 = new JScrollPane(resvList4);
+            private void jButton_add_rowsActionPerformed(ActionEvent evt) {
+                
+                TableModel model1 = jTableFlights.getModel();
+                int[] indexs = jTableFlights.getSelectedRows();
+                Object[] row = new Object[5];
+                DefaultTableModel model2 = (DefaultTableModel) jTableReservations.getModel();
+                
+                 reservationRowSorter = new TableRowSorter<>(jTableReservations.getModel());
+        jTableReservations.setRowSorter(reservationRowSorter);
+        
+                for (int i = 0; i < indexs.length; i++) {
+                    row[0] = reservationId;
+                    row[1] = model1.getValueAt(indexs[i], 0);
+                    row[2] = model1.getValueAt(indexs[i], 1);
+                    row[3] = model1.getValueAt(reservationId, 2);
+                    row[4] = model1.getValueAt(indexs[i], 3);
+                    
+                    model2.addRow(row);
+                }
+                reservationId++;
+            }
+        });
 
-        reservations.add(skrolpanel3);
+        buttonPanel.add(rezerwuj);
+        
+         potwierdz.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                try {
+                    jButton_add_rowsActionPerformed(evt);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(AirportWebClient.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (DocumentException ex) {
+                    Logger.getLogger(AirportWebClient.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 
-        anuluj.addActionListener(anulujMiejsce);
-        reservations.add(anuluj);
+            private void jButton_add_rowsActionPerformed(ActionEvent evt) throws FileNotFoundException, DocumentException {
+                generatePDF(jTableReservations.getValueAt(jTableReservations.getSelectedRow(), 0).toString());
+System.out.println(jTableReservations.getValueAt(jTableReservations.getSelectedRow(), 0).toString());
+            }
+        });
 
-        innemiejsce.addActionListener(zmienMiejsce);
-        reservations.add(innemiejsce);
-
-        reservations.add(skrolpanel4);
-
-        potwinnemiejsce.addActionListener(zmienMiejsce2);
-        reservations.add(potwinnemiejsce);
-
-        reservations.add(resLabel4);
-
-        reservations.setBorder(BorderFactory.createEmptyBorder(30,30,30,30));
-
-        tabs.add("Baza lotów", flights);
-        tabs.add("Rezerwacje", reservations);
-
+        tabs.add("Baza lotów", flightsPanel);
+        tabs.add("Rezerwacje", reservationsPanel);
         panel.add(tabs);
 
+        flightsPanel.setLayout(new GridLayout(2, 2));
+        flightsScrollPane = new JScrollPane(jTableFlights);
+        flightsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        flightsPanel.add(searchPanel,BorderLayout.NORTH);
+        flightsPanel.add(flightsScrollPane,BorderLayout.CENTER);
+        flightsPanel.add(buttonPanel,BorderLayout.SOUTH);
+        
+        
+
+        potwierdz.addActionListener(potwierdzenie);
+        reservationsScrollPane = new JScrollPane(jTableReservations);
+        reservationsPanel.add(searchReservationTF, BorderLayout.CENTER);
+        reservationsPanel.add(reservationsScrollPane, BorderLayout.CENTER);
+        reservationsPanel.add(potwierdz, BorderLayout.CENTER);
+        reservationsPanel.setLayout(new GridLayout(2, 2));
+
         add(panel);
-        setSize(600,600);
+
+        setSize(1200, 800);
         setVisible(true);
+        setLayout(new GridLayout());
     }
 }
-
-
-
-
