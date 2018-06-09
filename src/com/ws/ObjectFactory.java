@@ -33,8 +33,6 @@ public class ObjectFactory {
     private final static QName _GetConcertList_QNAME = new QName("http://ws.com/", "getFlightList");
     private final static QName _GetReservationList_QNAME = new QName("http://ws.com/", "getReservationList");
     private final static QName _GetReservationList2Response_QNAME = new QName("http://ws.com/", "getReservationList2Response");
-    private final static QName _CheckReservation_QNAME = new QName("http://ws.com/", "checkReservation");
-    private final static QName _CheckReservationResponse_QNAME = new QName("http://ws.com/", "checkReservationResponse");
     private final static QName _GetReservationListResponse_QNAME = new QName("http://ws.com/", "getReservationListResponse");
 
     /**
@@ -50,14 +48,6 @@ public class ObjectFactory {
      */
     public GetHelloWorldAsString createGetHelloWorldAsString() {
         return new GetHelloWorldAsString();
-    }
-
-    /**
-     * Create an instance of {@link DeleteReservationResponse }
-     * 
-     */
-    public DeleteReservationResponse createDeleteReservationResponse() {
-        return new DeleteReservationResponse();
     }
 
     /**
@@ -85,14 +75,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link DeleteReservation }
-     * 
-     */
-    public DeleteReservation createDeleteReservation() {
-        return new DeleteReservation();
-    }
-
-    /**
      * Create an instance of {@link GetHelloWorldAsStringResponse }
      * 
      */
@@ -114,23 +96,6 @@ public class ObjectFactory {
      */
     public GetReservationList2Response createGetReservationList2Response() {
         return new GetReservationList2Response();
-    }
-
-    /**
-     * Create an instance of {@link CheckReservation }
-     * 
-     */
-    public CheckReservation createCheckReservation() {
-        return new CheckReservation();
-    }
-
-
-    /**
-     * Create an instance of {@link CheckReservationResponse }
-     * 
-     */
-    public CheckReservationResponse createCheckReservationResponse() {
-        return new CheckReservationResponse();
     }
 
     /**
@@ -167,30 +132,12 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteReservationResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ws.com/", name = "deleteReservationResponse")
-    public JAXBElement<DeleteReservationResponse> createDeleteReservationResponse(DeleteReservationResponse value) {
-        return new JAXBElement<DeleteReservationResponse>(_DeleteReservationResponse_QNAME, DeleteReservationResponse.class, null, value);
-    }
-
-    /**
      * Create an instance of {@link JAXBElement }{@code <}{@link GetHelloWorldAsString }{@code >}}
      * 
      */
     @XmlElementDecl(namespace = "http://ws.com/", name = "getHelloWorldAsString")
     public JAXBElement<GetHelloWorldAsString> createGetHelloWorldAsString(GetHelloWorldAsString value) {
         return new JAXBElement<GetHelloWorldAsString>(_GetHelloWorldAsString_QNAME, GetHelloWorldAsString.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link DeleteReservation }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ws.com/", name = "deleteReservation")
-    public JAXBElement<DeleteReservation> createDeleteReservation(DeleteReservation value) {
-        return new JAXBElement<DeleteReservation>(_DeleteReservation_QNAME, DeleteReservation.class, null, value);
     }
 
     /**
@@ -236,25 +183,6 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://ws.com/", name = "getReservationList2Response")
     public JAXBElement<GetReservationList2Response> createGetReservationList2Response(GetReservationList2Response value) {
         return new JAXBElement<GetReservationList2Response>(_GetReservationList2Response_QNAME, GetReservationList2Response.class, null, value);
-    }
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CheckReservation }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ws.com/", name = "checkReservation")
-    public JAXBElement<CheckReservation> createCheckReservation(CheckReservation value) {
-        return new JAXBElement<CheckReservation>(_CheckReservation_QNAME, CheckReservation.class, null, value);
-    }
-
-
-    /**
-     * Create an instance of {@link JAXBElement }{@code <}{@link CheckReservationResponse }{@code >}}
-     * 
-     */
-    @XmlElementDecl(namespace = "http://ws.com/", name = "checkReservationResponse")
-    public JAXBElement<CheckReservationResponse> createCheckReservationResponse(CheckReservationResponse value) {
-        return new JAXBElement<CheckReservationResponse>(_CheckReservationResponse_QNAME, CheckReservationResponse.class, null, value);
     }
 
     /**

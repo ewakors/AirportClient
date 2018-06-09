@@ -142,7 +142,7 @@ public class AirportWebClient extends JFrame {
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
-        JPanel panel = new JPanel();
+        JPanel panel = new JPanel(new GridLayout(1, 3));
         JPanel searchPanel = new JPanel(new BorderLayout()); 
         JPanel reservationSearchPanel = new JPanel(new BorderLayout());
         
@@ -320,6 +320,6 @@ System.out.println(jTableReservations.getValueAt(jTableReservations.getSelectedR
 
         setSize(1200, 800);
         setVisible(true);
-        setLayout(new GridLayout());
+        setLayout(new GridLayout(2,1));
     }
 }
